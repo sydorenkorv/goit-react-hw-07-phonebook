@@ -1,42 +1,34 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { addItem } from '../redux/contactSlice';
-import { getContact, getFilterWord } from '../redux/selectors';
+import { useState } from 'react';
+import { useGetContactsQuery } from 'redux/contactSlice';
 import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
 
 export const App = () => {
-  const dispatch = useDispatch();
+  const [filter, setFilter] = useState('');
+  const { data, isFetching } = useGetContactsQuery();
 
-  const contacts = useSelector(getContact);
-  const filterWord = useSelector(getFilterWord);
-
-  const addContact = contactObj => {
-    const findContact = contacts.find(contact =>
-      contact.name.toLowerCase().includes(contactObj.name.toLowerCase())
-    );
-    findContact
-      ? alert(`${contactObj.name} is already in contact`)
-      : dispatch(addItem(contactObj));
+  const changeFilter = event => {
+    setFilter(event.currentTarget.value);
   };
 
   const isFilteredContacts = () => {
-    if (filterWord) {
-      const normalizeFilter = filterWord.toLowerCase();
+    const normalizeFilter = filter.toLowerCase();
 
-      if (contacts.length !== 0) {
-        return contacts.filter(contact =>
+    if (data) {
+      if (data.length !== 0) {
+        return data.filter(contact =>
           contact.name.toLowerCase().includes(normalizeFilter)
         );
       }
     }
-    return contacts;
+    return;
   };
 
   return (
     <div>
-      <ContactForm onSubmit={addContact} />
-      <Filter />
+      <ContactForm />
+      <Filter filter={filter} onChange={changeFilter} />
       <ContactList filteredContacts={isFilteredContacts()} />
     </div>
   );

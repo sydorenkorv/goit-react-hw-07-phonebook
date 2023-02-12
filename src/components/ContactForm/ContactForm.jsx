@@ -1,35 +1,23 @@
 import { useState } from 'react';
 import css from './ContactForm.module.css';
 import { nanoid } from 'nanoid';
+import {
+  useGetContactsQuery,
+  useCreateContactMutation,
+} from 'redux/contactSlice';
 
-export const ContactForm = ({ onSubmit }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+export const ContactForm = () => {
+  const [createContact, { isLoading }] = useCreateContactMutation();
+  const { data } = useGetContactsQuery();
 
-  const handleInputChange = event => {
-    const { value } = event.currentTarget;
-    event.currentTarget.name === 'name' ? setName(value) : setNumber(value);
-  };
-
-  const contactObj = (name, number) => {
-    return {
-      id: nanoid(),
-      name,
-      number,
-    };
-  };
-
-  const handleSubmit = event => {
-    event.preventDefault();
-
-    const contact = contactObj(name, number);
-    onSubmit(contact);
-    reset();
-  };
-
-  const reset = () => {
-    setName('');
-    setNumber('');
+  const handleSubmit = (values, { resetForm }) => {
+    const findContact = data.find(contact =>
+      contact.name.toLowerCase().includes(values.name.toLowerCase())
+    );
+    findContact
+      ? alert(`${values.name} is already in contact`)
+      : createContact(values);
+    resetForm();
   };
   return (
     <form className={css.form} onSubmit={handleSubmit}>
@@ -43,8 +31,6 @@ export const ContactForm = ({ onSubmit }) => {
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name  may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan."
           required
-          value={name}
-          onChange={handleInputChange}
         />
       </div>
       <div>
@@ -56,8 +42,6 @@ export const ContactForm = ({ onSubmit }) => {
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
-          value={number}
-          onChange={handleInputChange}
         />
       </div>
       <div>
