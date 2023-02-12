@@ -1,13 +1,12 @@
-import { useState } from 'react';
 import css from './ContactForm.module.css';
-import { nanoid } from 'nanoid';
+
 import {
   useGetContactsQuery,
   useCreateContactMutation,
 } from 'redux/contactSlice';
 
 export const ContactForm = () => {
-  const [createContact, { isLoading }] = useCreateContactMutation();
+  const [createContact] = useCreateContactMutation();
   const { data } = useGetContactsQuery();
 
   const handleSubmit = (values, { resetForm }) => {

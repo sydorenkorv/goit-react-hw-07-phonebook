@@ -6,7 +6,7 @@ import { ContactList } from './ContactList/ContactList';
 
 export const App = () => {
   const [filter, setFilter] = useState('');
-  const { data, isFetching } = useGetContactsQuery();
+  const { data } = useGetContactsQuery();
 
   const changeFilter = event => {
     setFilter(event.currentTarget.value);
