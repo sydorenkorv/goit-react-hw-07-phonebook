@@ -29,7 +29,7 @@ export const App = () => {
     <div>
       <ContactForm />
       <Filter filter={filter} onChange={changeFilter} />
-      <ContactList filteredContacts={isFilteredContacts()} />
+      <ContactList contacts={isFilteredContacts()} />
     </div>
   );
 };

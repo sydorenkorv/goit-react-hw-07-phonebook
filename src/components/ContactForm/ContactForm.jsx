@@ -1,10 +1,22 @@
-import css from './ContactForm.module.css';
+import {
+  Input,
+  InputContainer,
+  ButtonSubmit,
+  FormStyled,
+  Error,
+} from './ContactForm.styled';
+import { Formik } from 'formik';
+import { validation } from './validation';
 
 import {
   useGetContactsQuery,
   useCreateContactMutation,
 } from 'redux/contactSlice';
 
+const initialValues = {
+  name: '',
+  number: '',
+};
 export const ContactForm = () => {
   const [createContact] = useCreateContactMutation();
   const { data } = useGetContactsQuery();
@@ -19,35 +31,30 @@ export const ContactForm = () => {
     resetForm();
   };
   return (
-    <form className={css.form} onSubmit={handleSubmit}>
-      <h2 className={css.form__title}>Phonebook</h2>
-      <div className={css.form__container}>
-        <p className={css.form__label}>name: </p>
-        <input
-          className={css.form__input}
-          type="text"
-          name="name"
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name  may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan."
-          required
-        />
-      </div>
-      <div>
-        <p className={css.form__label}>phone: </p>
-        <input
-          className={css.form__input}
-          type="tel"
-          name="number"
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-        />
-      </div>
-      <div>
-        <button className={css.form__btn} type="submit">
-          add
-        </button>
-      </div>
-    </form>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={validation}
+    >
+      {({ errors, touched, isValidating }) => (
+        <FormStyled>
+          <InputContainer>
+            <label>
+              <Input type="text" name="name" />
+              name
+              <Error component="div" name="name" />
+            </label>
+
+            <label>
+              <Input type="tel" name="number" />
+              number
+              <Error component="div" name="number" />
+            </label>
+          </InputContainer>
+
+          <ButtonSubmit type="submit">add</ButtonSubmit>
+        </FormStyled>
+      )}
+    </Formik>
   );
 };
